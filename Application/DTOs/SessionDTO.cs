@@ -1,20 +1,13 @@
-﻿using Domain.Interfaces;
-using System;
-using System.Collections.Generic;
-
-namespace Domain.Entities
+﻿namespace Application.DTOs
 {
-    public class Session : IEntity
+    public class SessionDTO
     {
         public int Id { get; set; }
         public int MovieId { get; set; }
         public int HallId { get; set; }
-        public Movie Movie { get; set; }
-        public Hall Hall { get; set; }
         public DateTime DateTimeStart { get; set; }
         public DateTime DateTimeEnd { get; set; }
         public float Price { get; set; }
         public int ReservedPlaces { get; set; }
-        public ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
     }
 }

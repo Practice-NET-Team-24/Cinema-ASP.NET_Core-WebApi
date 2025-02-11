@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿using Domain.Interfaces;
 namespace Domain.Entities
 {
-    public class Hall
+    public class Hall : IEntity
     {
         public int Id { get; set; }
         public string Name { get; set; }

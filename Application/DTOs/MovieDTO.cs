@@ -1,9 +1,6 @@
-﻿using Domain.Interfaces;
-using System.Collections.Generic;
-
-namespace Domain.Entities
+﻿namespace Application.DTOs
 {
-    public class Movie : IEntity
+    public class MovieDTO
     {
         public int Id { get; set; }
         public string Name { get; set; }
@@ -13,9 +10,8 @@ namespace Domain.Entities
         public int AgeRestriction { get; set; }
         public int Duration { get; set; }
         public float Rating { get; set; }
-        public ICollection<Session> Sessions { get; set; }
-        public ICollection<MovieGenre> MovieGenres { get; set; }
-        public ICollection<MovieActor> MovieActors { get; set; }
+        public IEnumerable<MovieActorDTO> MovieActors { get; set; }
+        public IEnumerable<MovieGenreDTO> MovieGenres { get; set; }
 
     }
 }

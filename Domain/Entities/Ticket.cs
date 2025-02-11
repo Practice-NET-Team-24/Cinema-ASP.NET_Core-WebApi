@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.Eventing.Reader;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Domain.Interfaces;
+using System;
 
 namespace Domain.Entities
 {
-    public class Ticket
+    public class Ticket : IEntity
     {
         public int Id { get; set; }
         public int PlaceId { get; set; }
