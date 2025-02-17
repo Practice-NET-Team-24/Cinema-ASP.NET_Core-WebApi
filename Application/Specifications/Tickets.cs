@@ -20,6 +20,13 @@ namespace Application.Specifications
                 Query.Where(t => t.UserId == userId);
             }
         }
+        public class BySessionId : Specification<Ticket>
+        {
+            public BySessionId(int sessionId)
+            {
+                Query.Where(t => t.SessionId == sessionId);
+            }
+        }
 
         public class BySessionAndPlaceId : Specification<Ticket>
         {

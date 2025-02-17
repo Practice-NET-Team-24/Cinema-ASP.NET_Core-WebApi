@@ -1,9 +1,9 @@
 ﻿using Application.DTOs;
-using Application.Interfaces;
 using Application.Interfaces.Services;
-using Application.Specifications;
+using Application.Interfaces;
 using AutoMapper;
 using Domain.Entities;
+using Application.Specifications;
 
 namespace Application.Services
 {
@@ -29,12 +29,14 @@ namespace Application.Services
             _mapper = mapper;
         }
 
+
         public async Task<IEnumerable<TicketDTO>> GetTicketsByUserIdAsync(int userId)
         {
             var spec = new Tickets.ByUserId(userId);
             var tickets = await _ticketRepository.GetListBySpecAsync(spec);
             return _mapper.Map<IEnumerable<TicketDTO>>(tickets);
         }
+
 
         public async Task<IEnumerable<PlaceDTO>> GetAvailablePlacesAsync(int sessionId)
         {
@@ -43,14 +45,10 @@ namespace Application.Services
             return _mapper.Map<IEnumerable<PlaceDTO>>(places);
         }
 
-        public async Task<IEnumerable<HallDTO>> GetHallsAsync()
-        {
-            var halls = await _hallRepository.GetAllAsync();
-            return _mapper.Map<IEnumerable<HallDTO>>(halls);
-        }
 
-        public async Task<bool> PurchaseTicketAsync(int userId, int sessionId, int placeId)
+        public async Task<bool> PurchaseTicketAsync(int userId, int sessionId, int rowNumber, int seatNumber)
         {
+
             var session = await _sessionRepository.GetByIdAsync(sessionId);
             if (session == null)
             {
@@ -58,63 +56,22 @@ namespace Application.Services
             }
 
 
-            var place = await _placeRepository.GetByIdAsync(placeId);
-            if (place == null || place.HallId != session.HallId)
-            {
-                return false; // Place doesn't exist or doesn't belong to the selected hall
-            }
-
-            // Check if the seat is already reserved
-            var ticket = await _ticketRepository.GetListBySpecAsync(new Tickets.BySessionAndPlaceId(sessionId, placeId));
-            if (ticket.Any())
-            {
-                return false; // Seat is already reserved
-            }
-
-            // Create the ticket
-            var newTicket = new Ticket
-            {
-                PlaceId = placeId,
-                SessionId = sessionId,
-                UserId = userId,
-                CreatedAt = DateTime.UtcNow
-            };
-
-            // Save the ticket
-            await _ticketRepository.InsertAsync(newTicket);
-
-            // Update session's reserved places
-            session.ReservedPlaces++;
-            await _sessionRepository.UpdateAsync(session);
-
-            return true;
-        }
-        public async Task<bool> PurchaseTicketAsync(int userId, int sessionId, int rowNumber, int seatNumber)
-        {
-            // Check if the session exists
-            var session = await _sessionRepository.GetByIdAsync(sessionId);
-            if (session == null)
-            {
-                return false; // Session doesn't exist
-            }
-
-            // Check if the place exists in the session's hall
             var place = await _placeRepository.GetListBySpecAsync(new Tickets.PlaceByCoords(session.HallId, rowNumber, seatNumber));
             if (place == null || !place.Any())
             {
-                return false; // Place doesn't exist in the hall or invalid seat
+                return false;
             }
 
-            var selectedPlace = place.First(); // Assuming the place exists and we only expect one match
+            var selectedPlace = place.First(); 
 
-            // Check if the selected seat is already reserved
+            
             var existingTicket = await _ticketRepository.GetListBySpecAsync(new Tickets.BySessionAndPlaceId(sessionId, selectedPlace.Id));
             if (existingTicket.Any())
             {
-                return false; // Seat is already reserved
+                return false; 
             }
 
-            // Create the ticket
+            
             var newTicket = new Ticket
             {
                 PlaceId = selectedPlace.Id,
@@ -123,16 +80,50 @@ namespace Application.Services
                 CreatedAt = DateTime.UtcNow
             };
 
-            // Save the ticket
+            
             await _ticketRepository.InsertAsync(newTicket);
 
-            // Update session's reserved places count
+            
             session.ReservedPlaces++;
             await _sessionRepository.UpdateAsync(session);
 
-            return true; // Ticket successfully purchased
+            return true; 
         }
 
+        
+        public async Task<bool> CancelTicketAsync(int ticketId)
+        {
+            var ticket = await _ticketRepository.GetByIdAsync(ticketId);
+            if (ticket == null)
+            {
+                return false;
+            }
 
+           
+            await _ticketRepository.DeleteAsync(ticket);
+
+           
+            var session = await _sessionRepository.GetByIdAsync(ticket.SessionId);
+            if (session != null)
+            {
+                session.ReservedPlaces--;
+                await _sessionRepository.UpdateAsync(session);
+            }
+
+            return true;
+        }
+
+        
+        public async Task<IEnumerable<TicketDTO>> GetTicketsForSessionAsync(int sessionId)
+        {
+            var tickets = await _ticketRepository.GetListBySpecAsync(new Tickets.BySessionId(sessionId));
+            return _mapper.Map<IEnumerable<TicketDTO>>(tickets);
+        }
+
+        public async Task<IEnumerable<HallDTO>> GetHallsAsync()
+        {
+            var halls = await _hallRepository.GetAllAsync();
+            return _mapper.Map<IEnumerable<HallDTO>>(halls);
+        }
     }
 }
