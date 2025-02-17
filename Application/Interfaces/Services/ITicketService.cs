@@ -7,6 +7,8 @@ namespace Application.Interfaces.Services
     {
         Task<IEnumerable<TicketDTO>> GetTicketsByUserIdAsync(int userId);
         Task<IEnumerable<PlaceDTO>> GetAvailablePlacesAsync(int sessionId);
+        Task<IEnumerable<TicketDTO>> GetTicketsForSessionAsync(int sessionId);
+        Task<bool> CancelTicketAsync(int ticketId);
         Task<IEnumerable<HallDTO>> GetHallsAsync();
         Task<bool> PurchaseTicketAsync(int userId, int sessionId, int rowNumber, int seatNumber);
     }
