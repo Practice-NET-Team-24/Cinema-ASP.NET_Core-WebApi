@@ -16,6 +16,7 @@ builder.Services.AddControllers();
 builder.Services.AddRepository();
 
 builder.Services.AddScoped<IMovieService, MovieService>();
+builder.Services.AddScoped<ISessionService, SessionService>();
 
 builder.Services.AddAutoMapper(cfg => cfg.AddProfile<MappingProfile>());
 

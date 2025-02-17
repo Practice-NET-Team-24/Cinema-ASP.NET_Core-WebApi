@@ -64,6 +64,9 @@ namespace Application.Helpers
 
             CreateMap<ActorDTO, Actor>().ReverseMap();
             CreateMap<GenreDTO, Genre>().ReverseMap();
+
+
+            CreateMap<SessionDTO, Session>().ReverseMap();
         }
     }
 }
