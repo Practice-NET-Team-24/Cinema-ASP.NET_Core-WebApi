@@ -57,7 +57,8 @@ public class AccountController : ControllerBase
             var authClaims = new[]
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim("Role", user.Role.ToString())
             };
 
             var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSettings:SecretKey"]));
@@ -85,5 +86,19 @@ public class AccountController : ControllerBase
     public IActionResult Protected()
     {
         return Ok("You are authorized!");
+    }
+    
+    [Authorize(Policy = "AdminOnly")]
+    [HttpPost("admin-action")]
+    public IActionResult AdminAction()
+    {
+        return Ok("Only admins can access this.");
+    }
+    
+    [Authorize(Policy = "ClientOnly")]
+    [HttpGet("client-action")]
+    public IActionResult ClientAction()
+    {
+        return Ok("Only clients can access this.");
     }
 }
