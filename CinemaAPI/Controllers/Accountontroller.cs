@@ -1,5 +1,6 @@
 using Domain.Entities;
 using Domain.Enums;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CinemaAPI.Controllers;
 
@@ -77,5 +78,12 @@ public class AccountController : ControllerBase
         }
 
         return Unauthorized();
+    }
+    
+    [Authorize]
+    [HttpGet("protected")]
+    public IActionResult Protected()
+    {
+        return Ok("You are authorized!");
     }
 }
