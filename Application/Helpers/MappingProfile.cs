@@ -64,6 +64,16 @@ namespace Application.Helpers
 
             CreateMap<ActorDTO, Actor>().ReverseMap();
             CreateMap<GenreDTO, Genre>().ReverseMap();
+
+
+            CreateMap<SessionDTO, Session>().ReverseMap();
+
+
+
+            CreateMap<Ticket, TicketDTO>()
+            .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt));
+
+            CreateMap<Place, PlaceDTO>();
         }
     }
 }
