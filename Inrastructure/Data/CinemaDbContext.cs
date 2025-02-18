@@ -1,21 +1,20 @@
 ﻿using Domain.Entities;
 using Domain.Enums;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Data
 {
-    internal class CinemaDbContext : DbContext
+    public class CinemaDbContext : IdentityDbContext<User, IdentityRole<int>, int>
     {
         public CinemaDbContext() { }
 
         public CinemaDbContext(DbContextOptions options) : base(options) { }
         
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-
         {
-
-            optionsBuilder.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=CinemaDb;Trusted_Connection=True");
-
+            optionsBuilder.UseSqlServer("Server=188.166.13.38,1433;Database=CinemaDb;User Id=sa;Password=Asd123asd.;Trusted_Connection=False;MultipleActiveResultSets=true;TrustServerCertificate=True");
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
