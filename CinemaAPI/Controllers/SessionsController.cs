@@ -1,5 +1,6 @@
 ﻿using Application.DTOs;
 using Application.Interfaces.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CinemaAPI.Controllers
@@ -51,7 +52,7 @@ namespace CinemaAPI.Controllers
             return Ok(session);
         }
 
-
+        [Authorize(Policy = "AdminOnly")]
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] SessionDTO sessionDTO)
         {
@@ -64,7 +65,7 @@ namespace CinemaAPI.Controllers
             return CreatedAtAction(nameof(GetById), new { id = createdSession.Id }, createdSession);
         }
 
-
+        [Authorize(Policy = "AdminOnly")]
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] SessionDTO sessionDTO)
         {
@@ -82,7 +83,7 @@ namespace CinemaAPI.Controllers
             return Ok(updatedSession);
         }
 
-
+        [Authorize(Policy = "AdminOnly")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {

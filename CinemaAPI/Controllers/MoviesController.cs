@@ -1,5 +1,6 @@
 ﻿using Application.DTOs;
 using Application.Interfaces.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 
@@ -10,11 +11,12 @@ namespace CinemaAPI.Controllers
     public class MoviesController : ControllerBase
     {
         private readonly IMovieService _movieService;
+
         public MoviesController(IMovieService movieService)
         {
             _movieService = movieService;
         }
-        
+
 
         [HttpGet]
         public async Task<IActionResult> Get()
@@ -23,7 +25,6 @@ namespace CinemaAPI.Controllers
             return Ok(movies);
         }
 
-        
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
@@ -34,10 +35,11 @@ namespace CinemaAPI.Controllers
             {
                 return NotFound();
             }
+
             return Ok(movie);
         }
 
-        
+        [Authorize(Policy = "AdminOnly")]
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] MovieDTO movieDto)
         {
@@ -45,12 +47,13 @@ namespace CinemaAPI.Controllers
             {
                 return BadRequest();
             }
+
             var movie = await _movieService.CreateMovieAsync(movieDto);
 
             return Ok(movie);
         }
 
-        
+        [Authorize(Policy = "AdminOnly")]
         [HttpPut]
         public async Task<IActionResult> Put([FromBody] MovieDTO movieDTO)
         {
@@ -58,7 +61,7 @@ namespace CinemaAPI.Controllers
             {
                 return BadRequest();
             }
-            
+
 
             var movie = await _movieService.UpdateMovieAsync(movieDTO);
 
@@ -66,18 +69,19 @@ namespace CinemaAPI.Controllers
             {
                 return NotFound();
             }
+
             return Ok(movie);
         }
 
-        
+        [Authorize(Policy = "AdminOnly")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
             var movie = await _movieService.DeleteMovieAsync(id);
 
-            if(movie == null) 
-            { 
-                return NotFound(); 
+            if (movie == null)
+            {
+                return NotFound();
             }
 
             return Ok(movie);

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Application.Interfaces.Services;
 using Application.DTOs;
+using Microsoft.AspNetCore.Authorization;
 
 namespace API.Controllers
 {
@@ -37,7 +38,8 @@ namespace API.Controllers
                 return BadRequest("Invalid request.");
             }
 
-            var result = await _ticketService.PurchaseTicketAsync(request.UserId, request.SessionId, request.RowNumber, request.SeatNumber);
+            var result = await _ticketService.PurchaseTicketAsync(request.UserId, request.SessionId, request.RowNumber,
+                request.SeatNumber);
 
             if (result)
             {
@@ -49,6 +51,7 @@ namespace API.Controllers
             }
         }
 
+        [Authorize(Policy = "AdminOnly")]
         [HttpDelete("{ticketId}/cancel")]
         public async Task<IActionResult> CancelTicket(int ticketId)
         {
@@ -71,5 +74,4 @@ namespace API.Controllers
             return Ok(tickets);
         }
     }
-
 }
