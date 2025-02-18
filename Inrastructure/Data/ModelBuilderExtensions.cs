@@ -88,24 +88,6 @@ namespace Infrastructure.Data
                     ReservedPlaces = 0
                 }
             );
-
-            // Seed Users
-            modelBuilder.Entity<User>().HasData(
-                new User { Id = 1, Name = "Admin", Email = "admin@example.com", Role = UserRole.Admin },
-                new User { Id = 2, Name = "User1", Email = "user1@example.com", Role = UserRole.Client }
-            );
-
-            // Seed Tickets
-            modelBuilder.Entity<Ticket>().HasData(
-                new Ticket
-                {
-                    Id = 1,
-                    PlaceId = 1,
-                    SessionId = 1,
-                    UserId = 2,
-                    CreatedAt = new DateTime(2025, 02, 10, 12, 00, 00)  // Static value
-                }
-            );
         }
     }
 }

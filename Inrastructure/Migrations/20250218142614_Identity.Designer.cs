@@ -4,6 +4,7 @@ using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(CinemaDbContext))]
-    partial class CinemaDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250218142614_Identity")]
+    partial class Identity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -414,6 +417,16 @@ namespace Infrastructure.Migrations
                     b.HasIndex("UserId1");
 
                     b.ToTable("Tickets");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreatedAt = new DateTime(2025, 2, 10, 12, 0, 0, 0, DateTimeKind.Unspecified),
+                            PlaceId = 1,
+                            SessionId = 1,
+                            UserId = 2
+                        });
                 });
 
             modelBuilder.Entity("Domain.Entities.User", b =>
@@ -490,6 +503,34 @@ namespace Infrastructure.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "f39d012f-7e83-42cb-b64e-42c9a88c727a",
+                            Email = "admin@example.com",
+                            EmailConfirmed = false,
+                            LockoutEnabled = false,
+                            Name = "Admin",
+                            PhoneNumberConfirmed = false,
+                            Role = 0,
+                            TwoFactorEnabled = false
+                        },
+                        new
+                        {
+                            Id = 2,
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "c4f8e583-b50c-43fe-ad97-1e2427a09588",
+                            Email = "user1@example.com",
+                            EmailConfirmed = false,
+                            LockoutEnabled = false,
+                            Name = "User1",
+                            PhoneNumberConfirmed = false,
+                            Role = 1,
+                            TwoFactorEnabled = false
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<int>", b =>
