@@ -32,7 +32,7 @@ namespace Infrastructure.Data
                     ImageURL = "https://example.com/image1.jpg",
                     TrailerURL = "https://example.com/trailer1.mp4",
                     AgeRestriction = 13,
-                    Duration = 181,
+                    Duration = 181, // 181 minutes
                     Rating = 9.0f
                 },
                 new Movie
@@ -43,7 +43,7 @@ namespace Infrastructure.Data
                     ImageURL = "https://example.com/image2.jpg",
                     TrailerURL = "https://example.com/trailer2.mp4",
                     AgeRestriction = 16,
-                    Duration = 148,
+                    Duration = 148, // 148 minutes
                     Rating = 8.8f
                 }
             );
@@ -58,7 +58,7 @@ namespace Infrastructure.Data
             // Seed MovieActor relationships
             modelBuilder.Entity<MovieActor>().HasData(
                 new MovieActor { Id = 1, MovieId = 1, ActorId = 1, Role = "Tony Stark" },
-                new MovieActor { Id = 2, MovieId = 1, ActorId = 2, Role = "Captain Amerika"  },
+                new MovieActor { Id = 2, MovieId = 1, ActorId = 2, Role = "Captain America" },
                 new MovieActor { Id = 3, MovieId = 2, ActorId = 3, Role = "Ariadne" }
             );
 
@@ -75,17 +75,47 @@ namespace Infrastructure.Data
                 new Place { Id = 3, HallId = 2, RowNumber = 1, SeatNumber = 1 }
             );
 
-            // Seed Sessions
+            // Seed Sessions (DateTimeEnd = DateTimeStart + Movie Duration)
             modelBuilder.Entity<Session>().HasData(
                 new Session
                 {
                     Id = 1,
-                    MovieId = 1,
+                    MovieId = 1, // Avengers: Endgame (181 min)
                     HallId = 1,
-                    DateTimeStart = new DateTime(2025, 02, 15, 18, 00, 00),  // Static value
-                    DateTimeEnd = new DateTime(2025, 02, 15, 21, 00, 00),    // Static value
+                    DateTimeStart = new DateTime(2025, 02, 15, 18, 00, 00),
+                    DateTimeEnd = new DateTime(2025, 02, 15, 18, 00, 00).AddMinutes(181),
                     Price = 15.99f,
                     ReservedPlaces = 0
+                },
+                new Session
+                {
+                    Id = 2,
+                    MovieId = 2, // Inception (148 min)
+                    HallId = 2,
+                    DateTimeStart = new DateTime(2025, 02, 16, 15, 30, 00),
+                    DateTimeEnd = new DateTime(2025, 02, 16, 15, 30, 00).AddMinutes(148),
+                    Price = 12.99f,
+                    ReservedPlaces = 5
+                },
+                new Session
+                {
+                    Id = 3,
+                    MovieId = 1, // Avengers: Endgame (181 min)
+                    HallId = 2,
+                    DateTimeStart = new DateTime(2025, 02, 17, 20, 00, 00),
+                    DateTimeEnd = new DateTime(2025, 02, 17, 20, 00, 00).AddMinutes(181),
+                    Price = 16.50f,
+                    ReservedPlaces = 10
+                },
+                new Session
+                {
+                    Id = 4,
+                    MovieId = 2, // Inception (148 min)
+                    HallId = 1,
+                    DateTimeStart = new DateTime(2025, 02, 18, 17, 45, 00),
+                    DateTimeEnd = new DateTime(2025, 02, 18, 17, 45, 00).AddMinutes(148),
+                    Price = 14.50f,
+                    ReservedPlaces = 2
                 }
             );
         }
