@@ -67,6 +67,13 @@ namespace Application.Helpers
 
 
             CreateMap<SessionDTO, Session>().ReverseMap();
+
+
+
+            CreateMap<Ticket, TicketDTO>()
+            .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt));
+
+            CreateMap<Place, PlaceDTO>();
         }
     }
 }

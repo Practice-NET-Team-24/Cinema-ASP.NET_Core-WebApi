@@ -9,6 +9,8 @@ namespace Domain.Entities
         public int PlaceId { get; set; }
         public int SessionId { get; set; }
         public int UserId { get; set; }
+        public int RowNumber { get; set; }
+        public int SeatNumber { get; set; }
         public Place Place { get; set; }
         public Session Session { get; set; }
         public User User { get; set; }
