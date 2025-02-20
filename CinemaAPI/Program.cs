@@ -19,6 +19,9 @@ string connectionString = builder.Configuration.GetConnectionString("DefaultConn
 
 builder.Services.AddDbContext(connectionString);
 
+
+builder.Services.AddScoped<ITicketService, TicketService>();
+
 builder.Services.AddIdentity<User, IdentityRole<int>>()
     .AddEntityFrameworkStores<CinemaDbContext>()
     .AddDefaultTokenProviders();
@@ -96,7 +99,11 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;
+    options.JsonSerializerOptions.WriteIndented = true;
+});
 builder.Services.AddRepository();
 
 builder.Services.AddScoped<IMovieService, MovieService>();

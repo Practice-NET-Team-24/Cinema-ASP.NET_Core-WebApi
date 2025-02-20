@@ -8,6 +8,7 @@ using static Application.Specifications.Movies;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Ardalis.Specification;
 
 namespace Application.Services
 {
@@ -201,11 +202,23 @@ namespace Application.Services
             return _mapper.Map<List<MovieDTO>>(list);
         }
 
-        public async Task<MovieDTO?> GetMovieAsync(int movieId)
+        public async Task<Movie?> GetMovieAsync(int movieId)
         {
             var movieSpec = new Movies.ById(movieId);
-            var movie = await _movieRepository.GetFirstBySpecAsync(movieSpec);
-            return movie == null ? null : _mapper.Map<MovieDTO>(movie);
+            var movie = await _movieRepository.GetFirstBySpecAsync(new MovieWithDetailsSpecification(movieId));
+            return movie;
+        }
+    }
+    
+    public class MovieWithDetailsSpecification : Specification<Movie>
+    {
+        public MovieWithDetailsSpecification(int movieId)
+        {
+            Query.Where(m => m.Id == movieId)
+                .Include(m => m.MovieGenres)
+                .ThenInclude(mg => mg.Genre)  // Ensure genres are loaded
+                .Include(m => m.MovieActors)
+                .ThenInclude(ma => ma.Actor); // Ensure actors are loaded
         }
     }
 }

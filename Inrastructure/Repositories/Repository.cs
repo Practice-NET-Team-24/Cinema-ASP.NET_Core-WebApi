@@ -1,138 +1,137 @@
 ﻿using Ardalis.Specification;
-using Ardalis.Specification.EntityFrameworkCore;    
-
+using Ardalis.Specification.EntityFrameworkCore;
 using Application.Interfaces;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Domain.Interfaces;
 using System.Linq.Expressions;
+using Domain.Entities;
 
-namespace Infrastructure.Repositories
+namespace Infrastructure.Repositories;
+
+internal class Repository<TEntity> : IRepository<TEntity> where TEntity : class, IEntity
 {
-    internal class Repository<TEntity> : IRepository<TEntity> where TEntity : class, IEntity
+    internal CinemaDbContext context;
+    internal DbSet<TEntity> dbSet;
+
+    public Repository(CinemaDbContext context)
     {
-        internal CinemaDbContext context;
-        internal DbSet<TEntity> dbSet;
+        this.context = context;
+        this.dbSet = context.Set<TEntity>();
+    }
 
-        public Repository(CinemaDbContext context)
+    public async Task<TEntity?> InsertAsync(TEntity entity)
+    {
+        var addedEntity = await dbSet.AddAsync(entity);
+        await context.SaveChangesAsync();
+        return addedEntity.Entity;
+    }
+
+    public async Task InsertRangeAsync(IEnumerable<TEntity> entities)
+    {
+        await dbSet.AddRangeAsync(entities);
+    }
+
+
+    public async Task<TEntity?> UpdateAsync(TEntity entity)
+    {
+        var updatedEntity = dbSet.Attach(entity);
+        context.Entry(entity).State = EntityState.Modified;
+
+        return updatedEntity.Entity;
+    }
+
+    public async Task<TEntity?> DeleteAsync(int id)
+    {
+        TEntity? entity = dbSet.Find(id);
+
+        if (entity != null)
         {
-            this.context = context;
-            this.dbSet = context.Set<TEntity>();
+            var deletingEntity = await DeleteAsync(entity);
+            return deletingEntity;
         }
 
-        public async Task<TEntity?> InsertAsync(TEntity entity)
+        return entity;
+    }
+
+    public async Task<TEntity?> DeleteAsync(TEntity entity)
+    {
+        if (context.Entry(entity).State == EntityState.Detached)
         {
-            var addedEntity = await dbSet.AddAsync(entity);
-            return addedEntity.Entity;
+            dbSet.Attach(entity);
         }
 
-        public async Task InsertRangeAsync(IEnumerable<TEntity> entities)
+        var deletedEntity = dbSet.Remove(entity);
+        return deletedEntity.Entity;
+    }
+
+    public async Task<IEnumerable<TEntity>> GetAllAsync()
+    {
+        return await dbSet.ToListAsync();
+    }
+
+    public async Task<TEntity?> GetByIdAsync(int id)
+    {
+        return await dbSet.FindAsync(id);
+    }
+
+    public async Task<IEnumerable<TEntity>> GetByIdsAsync(int[] ids)
+    {
+        return await dbSet.ToListAsync();
+    }
+
+    public async Task<IEnumerable<TEntity>> GetListBySpecAsync(ISpecification<TEntity> specification)
+    {
+        return await ApplySpecification(specification).ToListAsync();
+    }
+
+    public async Task<TEntity?> GetFirstBySpecAsync(ISpecification<TEntity> specification)
+    {
+        return await ApplySpecification(specification).FirstOrDefaultAsync();
+    }
+
+    public async Task<TEntity?> GetFirstBySpecAsync(ISpecification<TEntity> specification, bool tracking)
+    {
+        var query = ApplySpecification(specification);
+        if (!tracking)
         {
-            await dbSet.AddRangeAsync(entities);
+            query = query.AsNoTracking();
         }
 
+        return await query.FirstOrDefaultAsync();
+    }
+
+    private IQueryable<TEntity> ApplySpecification(ISpecification<TEntity> specification)
+    {
+        var evaluator = new SpecificationEvaluator();
+        return evaluator.GetQuery(dbSet, specification);
+    }
 
 
+    public async Task SaveAsync()
+    {
+        await context.SaveChangesAsync();
+    }
 
-        public async Task<TEntity?> UpdateAsync(TEntity entity)
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    private bool disposed = false;
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!this.disposed)
         {
-            
-            
-            var updatedEntity = dbSet.Attach(entity);
-            context.Entry(entity).State = EntityState.Modified;
-
-            return updatedEntity.Entity;
-        }
-
-        public async Task<TEntity?> DeleteAsync(int id)
-        {
-            TEntity? entity = dbSet.Find(id);
-            
-            if (entity != null)
+            if (disposing)
             {
-                var deletingEntity = await DeleteAsync(entity);
-                return deletingEntity;
+                context.Dispose();
             }
-            return entity;
         }
 
-        public async Task<TEntity?> DeleteAsync(TEntity entity)
-        {
-            if (context.Entry(entity).State == EntityState.Detached)
-            {
-                dbSet.Attach(entity);
-            }
-            var deletedEntity = dbSet.Remove(entity);
-            return deletedEntity.Entity;
-        }
-
-        public async Task<IEnumerable<TEntity>> GetAllAsync()
-        {
-            return await dbSet.ToListAsync();
-        }
-
-        public async Task<TEntity?> GetByIdAsync(int id)
-        {
-            return await dbSet.FindAsync(id);
-        }
-
-        public async Task<IEnumerable<TEntity>> GetByIdsAsync(int[] ids)
-        {
-            return await dbSet.ToListAsync();
-        }
-
-        public async Task<IEnumerable<TEntity>> GetListBySpecAsync(ISpecification<TEntity> specification)
-        {
-            return await ApplySpecification(specification).ToListAsync();
-        }
-
-        public async Task<TEntity?> GetFirstBySpecAsync(ISpecification<TEntity> specification)
-        {
-            return await ApplySpecification(specification).FirstOrDefaultAsync();
-        }
-
-        public async Task<TEntity?> GetFirstBySpecAsync(ISpecification<TEntity> specification, bool tracking)
-        {
-            var query = ApplySpecification(specification);
-            if (!tracking)
-            {
-                query = query.AsNoTracking();
-            }
-            return await query.FirstOrDefaultAsync();
-        }
-
-        private IQueryable<TEntity> ApplySpecification(ISpecification<TEntity> specification)
-        {
-            var evaluator = new SpecificationEvaluator();
-            return evaluator.GetQuery(dbSet, specification);
-        }
-
-
-        public async Task SaveAsync()
-        {
-            await context.SaveChangesAsync();
-        }
-
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        private bool disposed = false;
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!this.disposed)
-            {
-                if (disposing)
-                {
-                    context.Dispose();
-                }
-            }
-            this.disposed = true;
-        }
-
+        this.disposed = true;
     }
 }

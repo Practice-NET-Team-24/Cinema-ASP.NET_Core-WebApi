@@ -16,6 +16,17 @@ namespace API.Controllers
             _ticketService = ticketService;
         }
 
+        [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> Get()
+        {
+            var userId = User.Claims.First(c => c.Type == "userId").Value;
+            var parsed = int.TryParse(userId, out int id);
+            if (!parsed) return BadRequest();
+            var tickets = await _ticketService.GetTicketsByUserIdAsync(id);
+            return Ok(tickets);
+        }
+
         [HttpGet("user/{userId}")]
         public async Task<IActionResult> GetUserTickets(int userId)
         {
@@ -37,8 +48,14 @@ namespace API.Controllers
             {
                 return BadRequest("Invalid request.");
             }
+            
+            var userId = User.Claims.First(c => c.Type == "userId").Value;
 
-            var result = await _ticketService.PurchaseTicketAsync(request.UserId, request.SessionId, request.RowNumber,
+            var isParsed = int.TryParse(userId, out int id);
+            
+            if (!isParsed) return BadRequest();
+            
+            var result = await _ticketService.PurchaseTicketAsync(id, request.SessionId, request.RowNumber,
                 request.SeatNumber);
 
             if (result)

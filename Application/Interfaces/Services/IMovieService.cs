@@ -1,4 +1,6 @@
 ﻿using Application.DTOs;
+using Domain.Entities;
+
 namespace Application.Interfaces.Services
 {
     public interface IMovieService
@@ -8,7 +10,7 @@ namespace Application.Interfaces.Services
         Task<MovieDTO?> UpdateMovieAsync(MovieDTO movieDTO);
         Task<List<MovieDTO>> GetAllMoviesAsync();
         Task<List<MovieDTO>> GetMoviesAsync(int[] movieIds);
-        Task<MovieDTO?> GetMovieAsync(int movieId);
+        Task<Movie?> GetMovieAsync(int movieId);
         
     }
 }

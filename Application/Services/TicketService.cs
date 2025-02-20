@@ -30,11 +30,11 @@ namespace Application.Services
         }
 
 
-        public async Task<IEnumerable<TicketDTO>> GetTicketsByUserIdAsync(int userId)
+        public async Task<IEnumerable<Ticket>> GetTicketsByUserIdAsync(int userId)
         {
             var spec = new Tickets.ByUserId(userId);
             var tickets = await _ticketRepository.GetListBySpecAsync(spec);
-            return _mapper.Map<IEnumerable<TicketDTO>>(tickets);
+            return _mapper.Map<IEnumerable<Ticket>>(tickets);
         }
 
 
@@ -57,19 +57,19 @@ namespace Application.Services
 
 
             var place = await _placeRepository.GetListBySpecAsync(new Tickets.PlaceByCoords(session.HallId, rowNumber, seatNumber));
-            if (place == null || !place.Any())
-            {
-                return false;
-            }
+            // if (place == null || !place.Any())
+            // {
+            //     return false;
+            // }
 
             var selectedPlace = place.First(); 
 
             
-            var existingTicket = await _ticketRepository.GetListBySpecAsync(new Tickets.BySessionAndPlaceId(sessionId, selectedPlace.Id));
-            if (existingTicket.Any())
-            {
-                return false; 
-            }
+            // var existingTicket = await _ticketRepository.GetListBySpecAsync(new Tickets.BySessionAndPlaceId(sessionId, selectedPlace.Id));
+            // if (existingTicket.Any())
+            // {
+            //     return false; 
+            // }
 
             
             var newTicket = new Ticket

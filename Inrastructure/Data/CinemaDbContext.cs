@@ -14,7 +14,8 @@ namespace Infrastructure.Data
         
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("Server=188.166.13.38,1433;Database=CinemaDb;User Id=sa;Password=Asd123asd.;Trusted_Connection=False;MultipleActiveResultSets=true;TrustServerCertificate=True");
+            optionsBuilder.UseSqlServer("Server=188.166.13.38,1433;Database=CinemaDb;User Id=sa;Password=Asd123asd.;Trusted_Connection=False;MultipleActiveResultSets=true;TrustServerCertificate=True",
+                b => b.MigrationsAssembly("Infrastructure"));
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
